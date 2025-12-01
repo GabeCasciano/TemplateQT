@@ -14,7 +14,7 @@ class MqttClient(QWidget):
 
     class Settings(BaseModel):
         host_name: str = "localhost"
-        client_name: str = "NcmViz"
+        client_name: str = "templateQt"
         host_port: int = 1883
 
     class Watchdog(QObject):

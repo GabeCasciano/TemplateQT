@@ -91,7 +91,7 @@ class MainWindow(QMainWindow):
 
         set_dark_mode(self)
 
-        self.setWindowTitle("Nexus Control Module Vizulation Software")
+        self.setWindowTitle("Template QT Project")
         
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)

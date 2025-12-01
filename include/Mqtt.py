@@ -10,6 +10,8 @@ from pathlib import Path
 
 class MqttClient(QWidget):
 
+    LOG_FMT_STR = f"[Mqtt] - %s"
+
     class Settings(BaseModel):
         host_name: str = "localhost"
         client_name: str = "NcmViz"
@@ -101,6 +103,34 @@ class MqttClient(QWidget):
     def _make_settings_file(
         cls, file: Path, host_name: str = "localhost", host_port: int = 1883
     ):
+
+        _setting = MqttClient.Settings()
+        file.write_text(_setting.model_dump_json(indent=2))
+
+    @classmethod
+    def _load_setting_file(cls, file: Path):
+        return MqttClient.Settings.model_validate(json.loads(file.read_text()))
+
+    def _on_connect(self, client, userdata, flags, rc, props=None):
+        logging.info(MqttClient.LOG_FMT_STR, "Connected to broker")
+        self._sub_all_topcis()
+        self.ConnectedSignal.emit(True)
+
+    def _on_disconnect(self, client, userdata, rc, props=None):
+        logging.warning(MqttClient.LOG_FMT_STR, "Disconnected from broker")
+        self.ConnectedSignal.emit(False)
+
+        if rc != 0:
+            logging.info(MqttClient.LOG_FMT_STR, "Trying to reconnect")
+            try:
+                client.reconnect()
+            except Exception as e:
+                logging.warning(MqttClient.LOG_FMT_STR, f"Failed to reconnect - {e}")
+                self.ConnectedSignal.emit(False)
+
+    def _sub_all_topcis(self):
+        logging.debug(MqttClient.LOG_FMT_STR, f"Subbing all topics")
+
     @pyqtSlot()
     def DisconnectBroker(self):
         if self.connected:

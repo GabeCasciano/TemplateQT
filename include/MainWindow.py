@@ -5,8 +5,8 @@ import time
 
 from paho.mqtt.client import MQTTv31
 
-from Mqtt import MqttClient 
-from MenuBar import MenuBar
+from .Mqtt import MqttClient 
+from .MenuBar import MenuBar
 
 import logging
 
